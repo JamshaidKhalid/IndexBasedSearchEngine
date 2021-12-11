@@ -5,12 +5,14 @@ from nltk.stem import PorterStemmer
 from nltk.stem import LancasterStemmer
 from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.corpus import stopwords
-
+from nltk.stem.snowball import SnowballStemmer
 
 
 #tokenization start from here
 
 ps = PorterStemmer()
+ss=SnowballStemmer("english")
+#using SnowBall stemmer for better control
 list1=[]
 # Removing the stopword 
 stop_words = set(stopwords.words('english'))
@@ -44,7 +46,7 @@ print(filtered_sentence)
 stemmed=[]
 #For stemming of the list
 for token in filtered_sentence:
-     stemmed_word = ps.stem(token)
+     stemmed_word = ss.stem(token)
      stemmed.append(stemmed_word)
 
 print(stemmed)
@@ -60,7 +62,7 @@ tokenID=0
 textfile.write("{")
 for element in final:
 
-    textfile.write('{0}{1}{2}{3}{4}{5}{6}{7}\n'.format("\"",tokenID,"\"",":","\"",element,"\"",","))
+    textfile.write('{0}{1}{2}{3}{4}{5}{6}{7}\n'.format("\"",element,"\"",":","\"",tokenID,"\"",","))
     tokenID+=1
 textfile.write("}")
 textfile.close()
