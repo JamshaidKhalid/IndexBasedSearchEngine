@@ -5,7 +5,8 @@ from sys import path
 import unicodedata
 from nltk.stem import PorterStemmer
 from nltk.stem import LancasterStemmer
-from nltk.tokenize import sent_tokenize, word_tokenize
+from nltk.stem.wordnet import WordNetLemmatizer
+from nltk.tokenize import word_tokenize
 from nltk.stem.snowball import SnowballStemmer
 from nltk.corpus import stopwords
 from nltk.util import pr
@@ -18,7 +19,7 @@ allWordList = []
 
 
 def read_text_file(file_path):
-
+    lemma = WordNetLemmatizer()
     ps = PorterStemmer()
     ss = SnowballStemmer("english")
     # using SnowBall stemmer for better control
@@ -59,7 +60,7 @@ def read_text_file(file_path):
         stemmed = []
         # For stemming of the list
         for token in filtered_sentence:
-            stemmed_word = ss.stem(token)
+            stemmed_word = lemma.lemmatize(token)
             stemmed.append(stemmed_word)
 
         punctuations = '''!()-[]{};:'"\,<>./?@#$%^&*_~0123456789'''
