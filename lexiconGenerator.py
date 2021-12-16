@@ -1,73 +1,108 @@
 import json
+import re
 import nltk
 import unicodedata
-from nltk.stem import PorterStemmer
-from nltk.stem import LancasterStemmer
 from nltk.tokenize import sent_tokenize, word_tokenize
 from nltk.corpus import stopwords
+from nltk.stem.snowball import SnowballStemmer
+from nltk.util import pr
+from collections import defaultdict
+import os
+import time
+import string
 
 
+start = time.time()
+tokenID = 0
+docID = 0
+stemmed = " "
+punctuations = '''!()-[]{};:'"\,<>./?@#$%^&*_~0123456789'''
+directory = 'dummyDataSet'
+ss = SnowballStemmer("english")
+# Using SnowBall stemmer to stem words like programming to 'program'
 
-#tokenization start from here
+wordsList = []
+previousData = {}
+# Dictionary intilaizaiton
+seen = set()
 
-ps = PorterStemmer()
-list1=[]
-# Removing the stopword 
-stop_words = set(stopwords.words('english'))
-f = open('dataSet.json') 
-# Loading the JSON File 
+previousReverseData = defaultdict(list)
+# Initializing it in defaultDictList so that in JSON we can have the format 0:[]
+previousForwardData = defaultdict(list)
+lexiconFile = open("lexicon.json", "w")
+forwardIndexFile = open("forwardIndex.json", "w")
+reverseIndexFile = open("reverseIndex.json", "w")
+# Writing files in w mode later will change it to append mode
+docID = 0
+tokenID = 0
+for root, dirs, files in os.walk(directory):
+    # Checking the whole director
+    for filename in files:
+        # parsing all the files in it
+        currentFile = (os.path.join(root, filename))
 
-# returns JSON object as
-# a dictionary
-data = json.load(f)
+        print((currentFile))
 
-# Iterating through the json
-# list
-for i in data['content']:
-    #adding character into the lists
-    list1.append(i)
-    
-list2String = "".join(list1)
-#joining the characters to form words
-print(list2String)
-#For Unicode Characters
-list1String = unicodedata.normalize('NFKD', list2String).encode('ASCII', 'ignore')
-words = word_tokenize(list1String.decode())
-#Tokenizing the whole string
-filtered_sentence = [w for w in words if not w.lower() in stop_words]
+        stop_words = set(stopwords.words('english'))
+        # Removing stop words
+        f = open(currentFile)
+        data = json.load(f)
+        # Data have the content of whole file in form of Dictionary
 
- 
-filtered_sentence = []
- 
-for w in words:
-    if w not in stop_words:
-        filtered_sentence.append(w)
+        for i in range(len(data)):
 
+            list1 = data[i]
+            letters = list1['content']
+            # parsing the content only to form the lexicon
+            wordsString = "".join(letters)
+            wordsString = wordsString.translate(str.maketrans('', '', string.punctuation))
+            # Removing punctuations like @# etc
+            wordsList = wordsString.split()
 
-print(words)
-print(filtered_sentence)
-stemmed=[]
-#For stemming of the list
-for token in filtered_sentence:
-     stemmed_word = ps.stem(token)
-     stemmed.append(stemmed_word)
+            #  Optimized to O(n)
+            docID += 1
+            # One document is traversed
 
-print(stemmed)
+            for w in wordsList:
+                if ((w not in stop_words)):
+                    # If the word is not a stop word
+                    stemmed_word = ss.stem(w)
+                    # Stemming of the word
+                    string_encode = stemmed_word.encode("ascii", "ignore")
+                    
+                    string_decode = string_encode.decode()
+                    # Removing the uniCode
+                    if string_decode not in previousData:
+                        # Checking for the words
+                        previousData[string_decode] = tokenID
+                        tokenID += 1
+                        # Incrementing the WordID
+                        # print(type(previousData[string_decode]))
 
+                    if (string_decode in previousData):
+                        # If the string is in already in the dictionary
+                        # count[previousData[string_decode]] += 1
+                        if previousData[string_decode] not in previousForwardData[docID]:
+                            # The format will be like docID:[wordID,wordID]
+                            # We will add hitlist and indexes later on in forward index
+                            # not to have the forward index again repeated
+                            previousForwardData[docID].append(previousData[string_decode])
+                    if (string_decode in previousData):
+                        # For Reverse Index
+                        # The format will be like wordID:[docID,docID]
+                        previousReverseData[previousData[string_decode]].append(docID)
 
-#Removing the duplicates if any in the string
+for i in previousReverseData:
+    # Removing duplicates from invertedIndex
+    previousReverseData[i] = list(dict.fromkeys(previousReverseData[i]))
 
-final = list(dict.fromkeys(stemmed))
-print(final)
-
-textfile = open("lexicon.json", "w")
-tokenID=0
-textfile.write("{")
-for element in final:
-
-    textfile.write('{0}{1}{2}{3}{4}{5}{6}{7}\n'.format("\"",tokenID,"\"",":","\"",element,"\"",","))
-    tokenID+=1
-textfile.write("}")
-textfile.close()
-# Closing file
-f.close()
+json.dump(previousData, lexiconFile)
+json.dump(previousForwardData, forwardIndexFile)
+json.dump(previousReverseData, reverseIndexFile)
+lexiconFile.close()
+reverseIndexFile.close()
+forwardIndexFile.close()
+end = time.time()
+# Time taken by the program
+# Writing and closing the files
+print((end - start) / 60)
