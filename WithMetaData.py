@@ -67,7 +67,6 @@ for root, dirs, files in os.walk(directory):
         # traversing data as json is now loaded in data as dictionary
 
         for i in range(len(data)):
-            # indexes=[]
             innerDict = {}
             list1 = data[i]
             # parsing the CONTENT only to form the lexicon
@@ -97,8 +96,7 @@ for root, dirs, files in os.walk(directory):
 
             # traversing each word in wordList to assign them wordIDs along with checking any repeatation
             for w in range(len(wordsList)):
-                indexes = [[]]
-
+                indexes = []
                 wordID = 0
                 if not(wordsList[w].lower() in stop_words) and wordsList[w].isalpha():
                     # print(w)
@@ -112,9 +110,7 @@ for root, dirs, files in os.walk(directory):
                     # Checking if the word is already in lexicon or not
 
                     if string_decode == ss.stem(wordsList[w]):
-                        indexes[0].append(w)
-                        hitlist = [len(indexes[0])]
-                        indexes.append(hitlist)
+                        indexes.append(w)
 
                     # print(type(previousData[string_decode]))
                     if string_decode in previousData:
