@@ -5,25 +5,34 @@ import time
 from operator import itemgetter
 from nltk.corpus import stopwords
 
+
 def singleWordSearch(searchInput):
  try:
+   docs=[]
+   docs1=[]
    #  if the word exist in our data then show the docs
    searchQuery= ss.stem(searchInput)
 
    start=time.time()
-   try:
-     wordID1=0
-     wordID1= titlelexFileData[searchQuery]
-     numberOfDocuments1=titleinvertedFileData[str(wordID1)]
-     docs1=OrderedDict(sorted(numberOfDocuments1.items(), key=lambda item: len(item[1]), reverse=True))
-     for i in docs1:
+   if searchQuery in titlelexFileData:
+    #  if the word is in title
+       wordID1=0
+       wordID1= titlelexFileData[searchQuery]
+      #  print(searchQuery)
+       numberOfDocuments1=titleinvertedFileData[str(wordID1)]
+       docs1=OrderedDict(sorted(numberOfDocuments1.items(), key=lambda item: len(item[1]), reverse=True))
+       for i in docs1:
       
-      dataArray=(metaData[str(i)])
-      print("Title")
-      print(dataArray[0])
-      print("URL")
-      print(dataArray[1])
-   except:
+        dataArray1=(metaData[str(i)])
+        print("Title")
+        print(dataArray1[0])
+        print("URL")
+        print(dataArray1[1])
+       
+     
+     
+   if searchQuery in lexFileData:
+    #  if the word is in content
       wordID=0
 
       wordID = lexFileData[searchQuery]
@@ -31,11 +40,14 @@ def singleWordSearch(searchInput):
 
       numberOfDocuments=invertedFileData[str(wordID)]
       docs = OrderedDict(sorted(numberOfDocuments.items(), key=lambda item: len(item[1]), reverse=True))
+      # print(docs)
+      # print(docs1)
 
 
 
       for i in docs:
-
+        if i not in docs1:
+          # The document shouldn't be first printed
          dataArray=(metaData[str(i)])
          print("Title")
          print(dataArray[0])
@@ -48,49 +60,133 @@ def singleWordSearch(searchInput):
    #  Else show that the words didn't exist in our data
     print("The word didn't exist in our data")
 
-def scoreGenerator(hitlists):
-  # Function for generating score having the args of indexes
+def scoreMaker(hitlists):
+  print(hitlists)
+  # Returning the length of the hits 
+  
+  return (len(hitlists))
+  
 
-		score = 0
-    
-		n = len(hitlists)
-    
-    # n will have the lenght of array like if i entered a word chill life
-    # if both are in same document in hitlists it will be like[[chilll's indexes],[life's indexes]]
-    # and n will have the length 2 
-		hitlist_lens = [len(hitlist) for hitlist in hitlists]
-    # now fetching the length of one word like chill
-		hitlist_is = [0] * n
-    # initalizing the 2D array with the n
+def multiWordSearch(search):
+  try:
+      docList=[]
+      for i in search:
+        # print("helo")
+        if i in titlelexFileData:
+          
+        # if the word didn't find in lexicon then it would show the exception
+          search_word_ids1 = [titlelexFileData[word] for word in search if ((word not in stop_words))]
+          # Having the word Id's from lexicon of the word entered by user
+          inverted_index_entries1 = [titleinvertedFileData[str(word_id)] for word_id in search_word_ids1 if word_id != -1]
+          # Having the indexes and docs from inverted Index
+          
+          
+          docs_with_score1 = []
+          # iie is for inverted index entries (IIE)
+          for ind, iie in enumerate(inverted_index_entries1):
+            # Looping the inverted index enteries
+            for doc1 in iie:
+              # Traversing the docs in dictionary as it will have the format {docID:[indexes]}
+  
+              current_doc_hitlists1 = [iie[doc1]]
+              
+              
+              # having the indexes of current document in the loop in current doc hitlist
+            
+              for remaining_iie1 in inverted_index_entries1[ind + 1:]:
+                # for the next document to check the gap between words
+                if doc1 in remaining_iie1:
+                  # if the doc is in in the remaining inverted index entries
+                  current_doc_hitlists1.append(remaining_iie1[doc1])
+                  # so append the hilist with that index of the next doc
+                  del remaining_iie1[doc1]
+                  # and delete the doc value so that we are done with that doc
+              # print(current_doc_hitlists1)    
+              docs_with_score1.append((doc1,scoreMaker(current_doc_hitlists1)))
+          
+            # if the two words are in the same doc it will append the indexes of two docs in one list
+            # Appending score with that doc so that we can make sure the search quality
+              sorted(docs_with_score1, key=lambda x: x[1])
+              docs_with_score1.sort(key=lambda x: x[1], reverse=True)
+              # print(docs_with_score1)
+              # Sorting it on the base of the score(descending order)
+              # print(docs_with_score1)
+              # print(1)
+              # print(docs_with_score1)
+          for index, values in enumerate(docs_with_score1):
+            # print(index)
+            docList.append(docs_with_score1[index][0])
+            
+            # print(values)
+          # print(docList)    
+          for i in docs_with_score1:
+              #  if i not in docs_with_score1:
+                # print(i)
+                dataArray1=(metaData[str(i[0])])
+                # print(dataArray1)
+                print("Title")
+                print(dataArray1[0])
+                print("URL")
+                print(dataArray1[1])
+                # break
+          break
+      for i in search:
+        
+        if i in lexFileData:
+         
+        
+         # if the word didn't find in lexicon then it would show the exception
+         search_word_ids = [lexFileData[word] for word in search if ((word not in stop_words))]
+         # Having the word Id's from lexicon of the word entered by user
+         inverted_index_entries = [invertedFileData[str(word_id)] for word_id in search_word_ids if word_id != -1]
+         # Having the indexes and docs from inverted Index
+         
+         docs_with_score = []
+         # iie is for inverted index entries (IIE)
+         print(inverted_index_entries)
+         for i, iie in enumerate(inverted_index_entries):
+           # Looping the inverted index enteries
+           for doc in iie:
+             # Traversing the docs in dictionary as it will have the format {docID:[indexes]}
+ 
+             current_doc_hitlists = [iie[doc]]
+             
+             # having the indexes of current document in the loop in current doc hitlist
+           
+             for remaining_iie in inverted_index_entries[i + 1:]:
+               # for the next document to check the gap between words
+               if doc in remaining_iie:
+                 # if the doc is in in the remaining inverted index entries
+                 current_doc_hitlists.append(remaining_iie[doc])
+                 # so append the hilist with that index of the next doc
+                 del remaining_iie[doc]
+                 # and delete the doc value so that we are done with that doc
+            #  print(current_doc_hitlists)
+            #  print(doc)
+             docs_with_score.append((doc,scoreMaker(current_doc_hitlists)))
+            #  scoreMaker(current_doc_hitlists)
+             # if the two words are in the same doc it will append the indexes of two docs in one list
+             # Appending score with that doc so that we can make sure the search quality
+         sorted(docs_with_score, key=lambda x: x[1])
+         docs_with_score.sort(key=lambda x: x[1], reverse=True)
+         # Sorting it on the base of the score(descending order)
+         
+        # print(docs_with_score1)
+        for i in docs_with_score:
+          # print(docs_with_score1)
+          
+          if i[0] not in docList:
+          #  print(i)
+           dataArray=(metaData[str(i[0])])
+           
+           print("Title")
+           print(dataArray[0])
+           print("URL")
+           print(dataArray[1])
+        break     
+  except:
+      print("The word is not in our data set!")
 
-		joined_hits = []
-
-		while hitlist_is != hitlist_lens:
-      # Terminating condtion
-			terminal_positions = []
-			taken_from = []
-
-			for i in range(n):
-				if hitlist_is[i] == len(hitlists[i]): continue
-				terminal_positions.append(hitlists[i][hitlist_is[i]])
-				taken_from.append(i)
-
-			minimum = min(terminal_positions)
-			minimum_index = terminal_positions.index(minimum)
-			hitlist_is[taken_from[minimum_index]] += 1
-
-			joined_hits.append((minimum_index, minimum))
-
-		prev_hit = joined_hits[0]
-
-		for hit in joined_hits[1:]:
-			score += 1
-			if hit[0] != prev_hit[0]: 
-				dist = hit[1] - prev_hit[1]
-				score += 100 / (dist + 1)
-			prev_hit = hit
-
-		return score
 
 ss = SnowballStemmer("english")
 stop_words = set(stopwords.words("english"))
@@ -131,97 +227,9 @@ for s in range(len(search)):
 
 
 if(len(search)>  1):
-  try:
-      try:
-       
-        # if the word didn't find in lexicon then it would show the exception
-        search_word_ids = [titlelexFileData[word] for word in search if ((word not in stop_words))]
-        # Having the word Id's from lexicon of the word entered by user
-        inverted_index_entries = [titleinvertedFileData[str(word_id)] for word_id in search_word_ids if word_id != -1]
-        # Having the indexes and docs from inverted Index
-        
-        docs_with_score = []
-        # iie is for inverted index entries (IIE)
-        for i, iie in enumerate(inverted_index_entries):
-          # Looping the inverted index enteries
-          for doc in iie:
-            # Traversing the docs in dictionary as it will have the format {docID:[indexes]}
 
-            current_doc_hitlists = [iie[doc]]
-            
-            # having the indexes of current document in the loop in current doc hitlist
-          
-            for remaining_iie in inverted_index_entries[i + 1:]:
-              # for the next document to check the gap between words
-              if doc in remaining_iie:
-                # if the doc is in in the remaining inverted index entries
-                current_doc_hitlists.append(remaining_iie[doc])
-                # so append the hilist with that index of the next doc
-                del remaining_iie[doc]
-                # and delete the doc value so that we are done with that doc
-            docs_with_score.append((doc,scoreGenerator(current_doc_hitlists)))
-          
-            # if the two words are in the same doc it will append the indexes of two docs in one list
-            # Appending score with that doc so that we can make sure the search quality
-        sorted(docs_with_score, key=lambda x: x[1])
-        docs_with_score.sort(key=lambda x: x[1], reverse=True)
-        # Sorting it on the base of the score(descending order)
+        multiWordSearch(search)
         
-        # print(docs_with_score)
-        for i in docs_with_score:
-
-          dataArray=(metaData[str(i[0])])
-          print("Title")
-          print(dataArray[0])
-          print("URL")
-          print(dataArray[1])
-      
-      except:
-        # if the word didn't find in lexicon then it would show the exception
-        search_word_ids = [lexFileData[word] for word in search if ((word not in stop_words))]
-        # Having the word Id's from lexicon of the word entered by user
-        inverted_index_entries = [invertedFileData[str(word_id)] for word_id in search_word_ids if word_id != -1]
-        # Having the indexes and docs from inverted Index
-        
-        docs_with_score = []
-        # iie is for inverted index entries (IIE)
-        for i, iie in enumerate(inverted_index_entries):
-          # Looping the inverted index enteries
-          for doc in iie:
-            # Traversing the docs in dictionary as it will have the format {docID:[indexes]}
-
-            current_doc_hitlists = [iie[doc]]
-            
-            # having the indexes of current document in the loop in current doc hitlist
-          
-            for remaining_iie in inverted_index_entries[i + 1:]:
-              # for the next document to check the gap between words
-              if doc in remaining_iie:
-                # if the doc is in in the remaining inverted index entries
-                current_doc_hitlists.append(remaining_iie[doc])
-                # so append the hilist with that index of the next doc
-                del remaining_iie[doc]
-                # and delete the doc value so that we are done with that doc
-            docs_with_score.append((doc,scoreGenerator(current_doc_hitlists)))
-          
-            # if the two words are in the same doc it will append the indexes of two docs in one list
-            # Appending score with that doc so that we can make sure the search quality
-        sorted(docs_with_score, key=lambda x: x[1])
-        docs_with_score.sort(key=lambda x: x[1], reverse=True)
-        # Sorting it on the base of the score(descending order)
-        
-        # print(docs_with_score)
-        for i in docs_with_score:
-
-          dataArray=(metaData[str(i[0])])
-          print("Title")
-          print(dataArray[0])
-          print("URL")
-          print(dataArray[1])
-  except:
-      print("The word is not in our data set!")
-      
-       
    # Multiword Search Query will be if it is greater than length 1
 else:
    # Else it will be a single word
