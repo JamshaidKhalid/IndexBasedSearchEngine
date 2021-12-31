@@ -51,7 +51,7 @@ for root, dirs, files in os.walk(directory):
 
         # each time the loop runs, currentFile will have the complete path and name of each next file
         currentFile = (os.path.join(root, filename))
-        print(docID)
+        # print(docID)
         print((currentFile))
 
         # opening currentFile as f, currentFile has the path of file
@@ -132,8 +132,8 @@ for root, dirs, files in os.walk(directory):
                             innerDict.__setitem__(
                                 previousData[string_decode], indexes)
 
-                    if tokenID in previousForwardData.keys():
-                        print(w)
+                    # if tokenID in previousForwardData.keys():
+                    #     print(w)
 
                     if string_decode not in previousData and string_decode not in stop_words:
                         previousData[string_decode] = tokenID
@@ -159,7 +159,7 @@ for docID in previousForwardData:
 
 # writing lexicon, forward index, reverseIndex to their respective opened files in json format
 json.dump(previousData, lexiconFile)
-json.dump(previousForwardData, forwardIndexFile)
+# json.dump(previousForwardData, forwardIndexFile)
 json.dump(Inv_index, reverseIndexFile)
 
 
