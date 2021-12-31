@@ -13,7 +13,7 @@ punctuations = '''!()-[]{};:'"\,<>./?@#$%^&*_~0123456789'''
 
 # PLEASE
 # Locate dataset folder and this program in the same directory and use the path in following form
-directory = 'dummyDataSet'
+directory = 'DataSet'
 # OR ENTER THE PATH OF DATASET in following form WHILE TESTING THIS PROGRAM.
 # directory = 'D:\\DSA Project\\main\\testDataSet'
 
@@ -30,12 +30,19 @@ previousData = {}
 previousReverseData = defaultdict(list)
 previousForwardData = defaultdict(list)
 metaData = defaultdict(list)
-
+parsedFiles = {}
+fileId = 0
 # Writing files in w mode later will change it to append mode
 lexiconFile = open("lexicon.json", "w")
 forwardIndexFile = open("forwardIndex.json", "w")
 reverseIndexFile = open("reverseIndex.json", "w")
+titleLexiconFile = open("titleLexicon.json", "w")
+# forwardIndexFile = open("forwardIndex.json", "w")
+titelReverseIndexFile = open("titleReverseIndex.json", "w")
 metaDataFile = open("metaData.json", "w")
+lexiconedFile = open("files.json", "a+")
+lexiconedFile.truncate(0)
+
 # tokenID assigns the wordID and docID assigns the docID
 docID = 0
 tokenID = 0
@@ -65,11 +72,11 @@ for root, dirs, files in os.walk(directory):
 
         for i in range(len(data)):
             # indexes=[]
-            
+
             innerDict = {}
             outerDict = {}
             hitList = []
-            hits=0
+            hits = 0
             list1 = data[i]
             # parsing the CONTENT only to form the lexicon
             words = list1['content']
@@ -97,10 +104,9 @@ for root, dirs, files in os.walk(directory):
             docID += 1
 
             # traversing each word in wordList to assign them wordIDs along with checking any repeatation
-    
+
             for w in range(len(wordsList)):
                 indexes = []
-                
 
                 wordID = 0
                 if not(wordsList[w].lower() in stop_words) and wordsList[w].isalpha():
@@ -115,7 +121,7 @@ for root, dirs, files in os.walk(directory):
                     # Checking if the word is already in lexicon or not
 
                     if string_decode == ss.stem(wordsList[w]):
-                       
+
                         indexes.append(w)
 
                     # print(type(previousData[string_decode]))
@@ -135,23 +141,18 @@ for root, dirs, files in os.walk(directory):
                             innerDict.__setitem__(
                                 previousData[string_decode], indexes)
 
-                    if tokenID in previousForwardData.keys():
-                        print(w)
-
+                
+                    metaData.__setitem__(docID, metaDataList)
                     if string_decode not in previousData and string_decode not in stop_words:
                         previousData[string_decode] = tokenID
                     # if previousData[string_decode] not in previousForwardData[docID]:
                         innerDict.__setitem__(tokenID, indexes)
                         previousForwardData.__setitem__(docID, innerDict)
-                        metaData.__setitem__(docID, metaDataList)
+                        
                         tokenID += 1
+        fileId += 1
+        parsedFiles.__setitem__(filename, fileId)
 
-
-# for i in indexes:
-#     print(indexes)
-# Removing duplicates from invertedIndex
-# for i in previousReverseData:
-#     previousReverseData[i] = list(dict.fromkeys(previousReverseData[i]))
 Inv_index = {}
 for docID in previousForwardData:
     for wordID in previousForwardData[docID]:
@@ -165,12 +166,12 @@ json.dump(previousData, lexiconFile)
 json.dump(previousForwardData, forwardIndexFile)
 json.dump(Inv_index, reverseIndexFile)
 json.dump(metaData, metaDataFile)
-
+json.dump(parsedFiles, lexiconedFile)
 # closing files
 lexiconFile.close()
 reverseIndexFile.close()
 forwardIndexFile.close()
-
+lexiconedFile.close()
 # noting end time
 end = time.time()
 # Time taken by the program
