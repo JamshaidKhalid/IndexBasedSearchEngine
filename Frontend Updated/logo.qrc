@@ -1,0 +1,8 @@
+<RCC>
+  <qresource>
+    <file>icons/logo.png</file>
+    <file>icons/logo2.png</file>
+    <file>icons/logo3.png</file>
+    <file>icons/flash.png</file>
+  </qresource>
+</RCC>
