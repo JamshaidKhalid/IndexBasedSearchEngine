@@ -23,6 +23,9 @@
       <height>751</height>
      </rect>
     </property>
+    <property name="styleSheet">
+     <string notr="true"/>
+    </property>
     <property name="currentIndex">
      <number>0</number>
     </property>
@@ -172,6 +175,19 @@ rgb(255, 255, 255);</string>
        <string/>
       </property>
      </widget>
+     <widget class="QLabel" name="label_4">
+      <property name="geometry">
+       <rect>
+        <x>330</x>
+        <y>450</y>
+        <width>241</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
     </widget>
     <widget class="QWidget" name="tab_4">
      <attribute name="title">
@@ -181,9 +197,9 @@ rgb(255, 255, 255);</string>
       <property name="geometry">
        <rect>
         <x>0</x>
-        <y>130</y>
+        <y>120</y>
         <width>1841</width>
-        <height>671</height>
+        <height>681</height>
        </rect>
       </property>
       <property name="font">
@@ -193,7 +209,7 @@ rgb(255, 255, 255);</string>
        </font>
       </property>
       <property name="styleSheet">
-       <string notr="true"/>
+       <string notr="true">color:rgb(240, 212, 215)</string>
       </property>
       <property name="openExternalLinks">
        <bool>true</bool>
@@ -202,7 +218,7 @@ rgb(255, 255, 255);</string>
      <widget class="QLineEdit" name="lineEdit_2">
       <property name="geometry">
        <rect>
-        <x>100</x>
+        <x>150</x>
         <y>20</y>
         <width>441</width>
         <height>41</height>
@@ -215,14 +231,14 @@ rgb(255, 255, 255);</string>
        </font>
       </property>
       <property name="styleSheet">
-       <string notr="true">background-color: rgb(204, 204, 204);
-color:rgb(0, 0, 0);</string>
+       <string notr="true">background-color: rgb(235, 235, 235);
+color: rgb(0, 0, 0);</string>
       </property>
      </widget>
      <widget class="QPushButton" name="pushButton_2">
       <property name="geometry">
        <rect>
-        <x>560</x>
+        <x>610</x>
         <y>20</y>
         <width>91</width>
         <height>41</height>
@@ -236,7 +252,7 @@ color:rgb(0, 0, 0);</string>
       </property>
       <property name="styleSheet">
        <string notr="true">color:rgb(0, 0, 0);
-background-color: rgb(148, 148, 148)</string>
+background-color: rgb(235, 235, 235)</string>
       </property>
       <property name="text">
        <string>Search</string>
@@ -253,7 +269,8 @@ background-color: rgb(148, 148, 148)</string>
       </property>
       <property name="styleSheet">
        <string notr="true">border-color: rgb(0, 0, 0);
-image: url(:/icons/logo.png);</string>
+image: url(:/icons/logo.png);
+background-color: rgb(0, 0, 0);</string>
       </property>
       <property name="text">
        <string/>
@@ -269,13 +286,39 @@ image: url(:/icons/logo.png);</string>
        </size>
       </property>
      </widget>
+     <widget class="QLabel" name="label_7">
+      <property name="geometry">
+       <rect>
+        <x>150</x>
+        <y>60</y>
+        <width>241</width>
+        <height>16</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string/>
+      </property>
+     </widget>
     </widget>
+   </widget>
+   <widget class="QLabel" name="label_5">
+    <property name="geometry">
+     <rect>
+      <x>720</x>
+      <y>640</y>
+      <width>241</width>
+      <height>16</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string/>
+    </property>
    </widget>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
  </widget>
  <resources>
-  <include location="Search Engine- Frontend/logo.qrc"/>
+  <include location="logo.qrc"/>
   <include location="logo.qrc"/>
  </resources>
  <connections/>
