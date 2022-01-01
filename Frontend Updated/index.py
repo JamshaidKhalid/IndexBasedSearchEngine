@@ -6,7 +6,7 @@ from searching import *
 import itertools
 import os
 import sys
-
+from uploadFile import upload
 from PyQt5.uic import loadUiType
 from PyQt5.uic.Compiler.indenter import createCodeIndenter
 
@@ -19,33 +19,22 @@ class browse(QDialog, browsedata):
         QDialog.__init__(self)
         self.setupUi(self)
         self.setWindowTitle('Browse Files')
-        style = open('themes/amoled.css', 'r')     
+        style = open('themes/amoled.css', 'r')
         style = style.read()
         self.setStyleSheet(style)
         self.browse.clicked.connect(self.browsefiles)
         self.pushButton.clicked.connect(self.addfile)
         self.pushButton_2.clicked.connect(self.close_browse)
 
-
     def browsefiles(self):
         fname = QFileDialog.getOpenFileName(
-        self, 'Open file', r'C:\Users\Safi\Desktop\IndexBasedSearchEngine-main\DataSet', 'Files (*.JSON)')
+            self, 'Open file', r'A:\DSA', 'Files (*.JSON)')
         file = self.filename.setText(fname[0])
 
     def addfile(self):
-        filepath = self.filename.text() # address of file
-        filename = os.path.basename(filepath)   #extracting name of file
-
-        dir = "C:\\Users\Safi\Desktop\\IndexBasedSearchEngine-main\\DataSet"
-        newfile = os.path.join(dir, filename)
-        with open(filepath,'r') as firstfile, open(newfile,'a') as secondfile:
-      
-            for line in firstfile:
-               
-             # append content to second file
-                secondfile.write(line)
-
+        originalPath = self.filename.text()  # address of file
         self.label.setText('New File Added Successfully!')
+        upload(originalPath)
 
     def close_browse(self):
         self.close()
@@ -79,21 +68,23 @@ class MainApp(QMainWindow, ui):
         # self.textBrowser.setStyleSheet("background-color: rgb(230, 230, 230)")
         # self.textBrowser.setStyleSheet("background-color: rgb(10, 10, 10)")
 
-
             searchinput = self.lineEdit.text()
             self.lineEdit_2.setText(searchinput)
 
             data = search(searchinput)
-            data = dict(itertools.islice(data.items(), 10))
 
             if not (data == None):
-                for key in data:
-                    data1 = key
-                    data2 = data[key]
-                    data2 = data2[:-1]
-                    self.textBrowser.append('<a href=%s>%s</a>' % (data2, data1))
-                    self.textBrowser.append(data2)
-                    self.textBrowser.append('')
+                data = dict(itertools.islice(data.items(), 10))
+            for key in data:
+                data1 = key
+                data2 = data[key]
+                data3 = data2[:-1]
+                self.textBrowser.append(
+                    '<a href=%s>%s</a>' % (data3, data1))
+                self.textBrowser.append(str(data2))
+                self.textBrowser.append('')
+            else:
+                self.textBrowser.append('No data found!')
 
     def show_results2(self):
         if self.lineEdit_2.text() == '':
@@ -107,23 +98,24 @@ class MainApp(QMainWindow, ui):
             searchinput = self.lineEdit_2.text()
 
             data = search(searchinput)
-            data = dict(itertools.islice(data.items(), 10))
 
             if not (data == None):
+                data = dict(itertools.islice(data.items(), 10))
                 for key in data:
 
                     data1 = key
                     data2 = data[key]
-                    data2 = data2[:-1]
-                    self.textBrowser.append('<a href=%s>%s</a>' % (data2, data1))
-                    self.textBrowser.append(data2)
+                    data3 = data2[:-1]
+                    self.textBrowser.append(
+                        '<a href=%s>%s</a>' % (data3, data1))
+                    self.textBrowser.append(str(data2))
                     self.textBrowser.append('')
+            else:
+                self.textBrowser.append('No data found!')
 
     def handle_browse(self):
         self.window2 = browse()
         self.window2.show()
-
-
 
     def show_home(self):
         self.tabWidget.setCurrentIndex(0)
