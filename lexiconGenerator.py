@@ -1,3 +1,4 @@
+from titleGen import *
 import json
 from nltk.corpus import stopwords
 from nltk.stem.snowball import SnowballStemmer
@@ -13,7 +14,7 @@ punctuations = '''!()-[]{};:'"\,<>./?@#$%^&*_~0123456789'''
 
 # PLEASE
 # Locate dataset folder and this program in the same directory and use the path in following form
-directory = 'DataSet'
+directory = 'newDataSet'
 # OR ENTER THE PATH OF DATASET in following form WHILE TESTING THIS PROGRAM.
 # directory = 'D:\\DSA Project\\main\\testDataSet'
 
@@ -27,23 +28,19 @@ wordsString = ""
 previousData = {}
 
 # Initializing it in defaultDictList so that in JSON we can have the format 0:[]
-previousReverseData = defaultdict(list)
 previousForwardData = defaultdict(list)
+previousReverseData = defaultdict(list)
 metaData = defaultdict(list)
-parsedFiles = {}
-fileId = 0
+parsedData = {}
+
 # Writing files in w mode later will change it to append mode
 lexiconFile = open("lexicon.json", "w")
-forwardIndexFile = open("forwardIndex.json", "w")
-reverseIndexFile = open("reverseIndex.json", "w")
-titleLexiconFile = open("titleLexicon.json", "w")
 # forwardIndexFile = open("forwardIndex.json", "w")
-titelReverseIndexFile = open("titleReverseIndex.json", "w")
+reverseIndexFile = open("reverseIndex.json", "w")
 metaDataFile = open("metaData.json", "w")
-lexiconedFile = open("files.json", "a+")
-lexiconedFile.truncate(0)
-
+lexiconedFile = open("files.json", "w")
 # tokenID assigns the wordID and docID assigns the docID
+fileId = 0
 docID = 0
 tokenID = 0
 # stopwords to remove
@@ -103,6 +100,7 @@ for root, dirs, files in os.walk(directory):
             # One document is traversed
             docID += 1
 
+            metaData.__setitem__(docID, metaDataList)
             # traversing each word in wordList to assign them wordIDs along with checking any repeatation
 
             for w in range(len(wordsList)):
@@ -141,18 +139,24 @@ for root, dirs, files in os.walk(directory):
                             innerDict.__setitem__(
                                 previousData[string_decode], indexes)
 
-                
-                    metaData.__setitem__(docID, metaDataList)
+                    if tokenID in previousForwardData.keys():
+                        print(w)
+
                     if string_decode not in previousData and string_decode not in stop_words:
                         previousData[string_decode] = tokenID
                     # if previousData[string_decode] not in previousForwardData[docID]:
                         innerDict.__setitem__(tokenID, indexes)
                         previousForwardData.__setitem__(docID, innerDict)
-                        
                         tokenID += 1
         fileId += 1
-        parsedFiles.__setitem__(filename, fileId)
+        parsedData.__setitem__(filename, fileId)
 
+
+# for i in indexes:
+#     print(indexes)
+# Removing duplicates from invertedIndex
+# for i in previousReverseData:
+#     previousReverseData[i] = list(dict.fromkeys(previousReverseData[i]))
 Inv_index = {}
 for docID in previousForwardData:
     for wordID in previousForwardData[docID]:
@@ -163,15 +167,16 @@ for docID in previousForwardData:
 
 # writing lexicon, forward index, reverseIndex to their respective opened files in json format
 json.dump(previousData, lexiconFile)
-json.dump(previousForwardData, forwardIndexFile)
+# json.dump(previousForwardData, forwardIndexFile)
 json.dump(Inv_index, reverseIndexFile)
 json.dump(metaData, metaDataFile)
-json.dump(parsedFiles, lexiconedFile)
+json.dump(parsedData, lexiconedFile)
 # closing files
 lexiconFile.close()
 reverseIndexFile.close()
-forwardIndexFile.close()
-lexiconedFile.close()
+# forwardIndexFile.close()
+metaDataFile.close()
+lexiconFile.close()
 # noting end time
 end = time.time()
 # Time taken by the program
