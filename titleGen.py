@@ -32,9 +32,9 @@ previousForwardData = defaultdict(list)
 
 
 # Writing files in w mode later will change it to append mode
-lexiconFile = open("titleLexicon.json", "w")
-forwardIndexFile = open("titleForwardIndex.json", "w")
-reverseIndexFile = open("titleReverseIndex.json", "w")
+lexiconFile = open("titleLex.json", "w")
+# forwardIndexFile = open("titleForIndex.json", "w")
+reverseIndexFile = open("titleRevIndex.json", "w")
 
 # tokenID assigns the wordID and docID assigns the docID
 docID = 0
@@ -51,7 +51,7 @@ for root, dirs, files in os.walk(directory):
 
         # each time the loop runs, currentFile will have the complete path and name of each next file
         currentFile = (os.path.join(root, filename))
-        # print(docID)
+        print(docID)
         print((currentFile))
 
         # opening currentFile as f, currentFile has the path of file
@@ -166,7 +166,7 @@ json.dump(Inv_index, reverseIndexFile)
 # closing files
 lexiconFile.close()
 reverseIndexFile.close()
-forwardIndexFile.close()
+# forwardIndexFile.close()
 
 # noting end time
 end = time.time()
