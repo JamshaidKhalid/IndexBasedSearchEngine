@@ -4,6 +4,37 @@ from collections import OrderedDict
 import time
 from operator import itemgetter
 from nltk.corpus import stopwords
+ss = SnowballStemmer("english")
+stop_words = set(stopwords.words("english"))
+
+lexiconFile = open("lexicon.json", "r")
+# forwardIndexFile = open("forwardIndex.json", "r")
+reverseIndexFile = open("reverseIndex.json", "r")
+metaDataFile = open("metaData.json","r")
+titleLexiconFile = open("titleLexicon.json", "r")
+# forwardIndexFile = open("forwardIndex.json", "r")
+titleReverseIndexFile = open("titleReverseIndex.json", "r")
+
+lexFileData= json.load(lexiconFile)
+
+# forwardFileData= json.load(forwardIndexFile)
+
+invertedFileData= json.load(reverseIndexFile)
+titlelexFileData= json.load(titleLexiconFile)
+
+# forwardFileData= json.load(forwardIndexFile)
+
+titleinvertedFileData= json.load(titleReverseIndexFile)
+# print(titlelexFileData)
+# print(titleinvertedFileData)  
+metaData = json.load(metaDataFile)
+
+
+
+
+######################################################################################################################################################################################
+
+
 
 
 def singleWordSearch(searchInput):
@@ -21,13 +52,13 @@ def singleWordSearch(searchInput):
       #  print(searchQuery)
        numberOfDocuments1=titleinvertedFileData[str(wordID1)]
        docs1=OrderedDict(sorted(numberOfDocuments1.items(), key=lambda item: len(item[1]), reverse=True))
+       data1 = {}
        for i in docs1:
       
         dataArray1=(metaData[str(i)])
-        print("Title")
-        print(dataArray1[0])
-        print("URL")
-        print(dataArray1[1])
+        data1[dataArray1[0]]= dataArray1[1]
+
+       return data1
        
      
      
@@ -44,28 +75,28 @@ def singleWordSearch(searchInput):
       # print(docs1)
 
 
-
+      data = {}
       for i in docs:
         if i not in docs1:
           # The document shouldn't be first printed
          dataArray=(metaData[str(i)])
-         print("Title")
-         print(dataArray[0])
-         print("URL")
-         print(dataArray[1])
+        data[dataArray[0]]= dataArray[1]
+
+    #   print(data)
+      return data
+
       end = time.time()
       print(end-start)
 
  except:
    #  Else show that the words didn't exist in our data
     print("The word didn't exist in our data")
+def scoreGenerator(hitlists):
+  # print(hitlists)
+  return len(hitlists)
 
-def scoreMaker(hitlists):
-  print(hitlists)
-  # Returning the length of the hits 
-  
-  return (len(hitlists))
-  
+    
+
 
 def multiWordSearch(search):
   try:
@@ -102,7 +133,7 @@ def multiWordSearch(search):
                   del remaining_iie1[doc1]
                   # and delete the doc value so that we are done with that doc
               # print(current_doc_hitlists1)    
-              docs_with_score1.append((doc1,scoreMaker(current_doc_hitlists1)))
+              docs_with_score1.append((doc1,scoreGenerator(current_doc_hitlists1)))
           
             # if the two words are in the same doc it will append the indexes of two docs in one list
             # Appending score with that doc so that we can make sure the search quality
@@ -118,18 +149,15 @@ def multiWordSearch(search):
             docList.append(docs_with_score1[index][0])
             
             # print(values)
-          # print(docList)    
+          # print(docList)   
+          data1 = {} 
           for i in docs_with_score1:
               #  if i not in docs_with_score1:
                 # print(i)
                 dataArray1=(metaData[str(i[0])])
-                # print(dataArray1)
-                print("Title")
-                print(dataArray1[0])
-                print("URL")
-                print(dataArray1[1])
-                # break
-          break
+                data1[dataArray1[0]]= dataArray1[1]
+  
+          return data1 
       for i in search:
         
         if i in lexFileData:
@@ -143,7 +171,6 @@ def multiWordSearch(search):
          
          docs_with_score = []
          # iie is for inverted index entries (IIE)
-         print(inverted_index_entries)
          for i, iie in enumerate(inverted_index_entries):
            # Looping the inverted index enteries
            for doc in iie:
@@ -161,10 +188,8 @@ def multiWordSearch(search):
                  # so append the hilist with that index of the next doc
                  del remaining_iie[doc]
                  # and delete the doc value so that we are done with that doc
-            #  print(current_doc_hitlists)
-            #  print(doc)
-             docs_with_score.append((doc,scoreMaker(current_doc_hitlists)))
-            #  scoreMaker(current_doc_hitlists)
+             docs_with_score.append((doc,scoreGenerator(current_doc_hitlists)))
+           
              # if the two words are in the same doc it will append the indexes of two docs in one list
              # Appending score with that doc so that we can make sure the search quality
          sorted(docs_with_score, key=lambda x: x[1])
@@ -172,65 +197,38 @@ def multiWordSearch(search):
          # Sorting it on the base of the score(descending order)
          
         # print(docs_with_score1)
+        data = {}
         for i in docs_with_score:
           # print(docs_with_score1)
           
           if i[0] not in docList:
           #  print(i)
            dataArray=(metaData[str(i[0])])
-           
-           print("Title")
-           print(dataArray[0])
-           print("URL")
-           print(dataArray[1])
-        break     
+           data[dataArray[0]]= dataArray[1]
+
+        return data
   except:
       print("The word is not in our data set!")
 
 
-ss = SnowballStemmer("english")
-stop_words = set(stopwords.words("english"))
-
-lexiconFile = open("lexicon.json", "r")
-# forwardIndexFile = open("forwardIndex.json", "r")
-reverseIndexFile = open("reverseIndex.json", "r")
-metaDataFile = open("metaData.json","r")
-titleLexiconFile = open("titleLexicon.json", "r")
-# forwardIndexFile = open("forwardIndex.json", "r")
-titleReverseIndexFile = open("titleReverseIndex.json", "r")
-
-lexFileData= json.load(lexiconFile)
-
-# forwardFileData= json.load(forwardIndexFile)
-
-invertedFileData= json.load(reverseIndexFile)
-titlelexFileData= json.load(titleLexiconFile)
-
-# forwardFileData= json.load(forwardIndexFile)
-
-titleinvertedFileData= json.load(titleReverseIndexFile)
-# print(titlelexFileData)
-# print(titleinvertedFileData)
-
-metaData = json.load(metaDataFile)
-innerDict = {}
-docList=[]
-searchInput= input("Enter the word to search in document\n")
-
-searchInput=searchInput.lower()
-# Converting the word into lower case alphabets
-search= searchInput.split()
-# Splittting the word so that it would be easy to go for mulit and single word approach
-for s in range(len(search)):
-  search[s]=ss.stem(search[s])
-  # Converting all the words in their stemmed form to process in multiword Query
-
-
-if(len(search)>  1):
-
-        multiWordSearch(search)
-        
-   # Multiword Search Query will be if it is greater than length 1
-else:
-   # Else it will be a single word
-   singleWordSearch(searchInput)
+def search(searchInput):
+  
+  searchInput=searchInput.lower()
+  # Converting the word into lower case alphabets
+  search= searchInput.split()
+  # Splittting the word so that it would be easy to go for mulit and single word approach
+  for s in range(len(search)):
+    search[s]=ss.stem(search[s])
+    # Converting all the words in their stemmed form to process in multiword Query
+  
+  
+  if(len(search)>  1):
+  
+        result = multiWordSearch(search)
+        return result
+          
+     # Multiword Search Query will be if it is greater than length 1
+  else:
+     # Else it will be a single word
+        result = singleWordSearch(searchInput)
+        return result
