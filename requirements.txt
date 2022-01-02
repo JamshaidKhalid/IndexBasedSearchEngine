@@ -1,0 +1,7 @@
+json
+nltk
+os
+stopwords
+SnowballStemmer
+pyqt5
+pyqt5-tools
